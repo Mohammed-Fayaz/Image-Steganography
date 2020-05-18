@@ -5,24 +5,43 @@
 using namespace std;
 using namespace cv;
 
+//ascii ranges from 0 to 127 we can have a max of 7 bits in binary
+// So a char will be converted into a 7 bit binary code.
+
 string bin(int num){
     string s="";
     int i,flag=0;
-    for(i = 31 ; i>=0 ; i--){
+    for(i = 31 ; i>=0 ; i--){  
         int k = num >> i;
         if(k&1){
+            
             s.append("1");
-            flag=1;}
+            flag=1;
+            
+            }
+        
         else{
-            if(flag == 1){
-            s.append("0");
-    }}}
-    return s;
+            if(flag == 1)
+                s.append("0");
+    
+    }
+    }
+
+    string temp="";
+    for(int i =0 ; i< 7-s.length() ; i++){
+        temp.append("0");
 }
+    return temp.append(s);
+}
+
 
 
 int main(int argc, char** argv){
   fstream MyFile(argv[2]);
+  
+  if(!MyFile.is_open()){
+      cout <<"error in file handling"<<endl;
+      return -1;}
 
     char c,d;
     string temp="";
@@ -33,12 +52,10 @@ int main(int argc, char** argv){
          temp.append(bin((int)c));
          cout<<temp<<endl;
          }
+        //add 7 0's to temp in the end to indicate the end of file
+        temp.append("0000000");
 
    MyFile.close();
- /* string s = "hai";
-  for(std::string::size_type i =0; i<s.size(); i++){
-      std::cout << bin((int)s[i])<<endl;
-    }*/
     
     Mat image = imread(argv[1]);
     if(image.empty()){
