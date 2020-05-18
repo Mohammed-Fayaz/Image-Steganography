@@ -28,6 +28,7 @@ int main(int argc , char** argv){
     string message="";
     int bits =0;
     int flag;
+    int count=0;
 
 
     Mat image = imread(argv[1]);
@@ -42,16 +43,17 @@ int main(int argc , char** argv){
 
                 Vec3b pixel = image.at<Vec3b>(Point(row,col));
                 //getting  bits that are stored in the picture
-                
-                if(pixel.val[color] &1){
+                if((int)pixel.val[color] &1){
                     temp.append("1");
                 }
                 else{
                     temp.append("0");
                 }
                 bits++;
-                if(bits == 8){
+                if(bits == 7){
+                    
                     flag = getintvalue(temp);
+                    //cout<<flag<<endl;
                     
                     //when we reach endoffile we exit the loop
                     if(flag == 0){
@@ -61,6 +63,7 @@ int main(int argc , char** argv){
                     }
                     else{
                         char x = (char)flag;
+                      //  cout<<x<<endl;
                         message.append(&x,1);
                         temp ="";
                         bits=0;

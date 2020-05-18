@@ -4,6 +4,7 @@
 
 using namespace std;
 using namespace cv;
+auto output_stream = std::ofstream(output_file.c_str(), std::ios::binary);
 
 //ascii ranges from 0 to 127 we can have a max of 7 bits in binary
 // So a char will be converted into a 7 bit binary code.
@@ -26,7 +27,7 @@ string bin(int num){
     
     }
     }
-//making sure the legth of the binary is 7
+    
     string temp="";
     for(int i =0 ; i< 7-s.length() ; i++){
         temp.append("0");
@@ -38,9 +39,6 @@ string bin(int num){
 
 int main(int argc, char** argv){
   
-  //argv[1] contains the image that is used.
-  //argv[2] contains the textfile.
-  //argv[3] contains the output image
   
   fstream MyFile(argv[2]);
   
@@ -53,15 +51,15 @@ int main(int argc, char** argv){
     int flag;
     while(!MyFile.eof()){
          MyFile.get(c);
-         cout<<c;
+         //cout<<c;
          temp.append(bin((int)c));
-         cout<<temp<<endl;
+         //cout<<temp<<endl;
          }
         //add 7 0's to temp in the end to indicate the end of file
         temp.append("0000000");
 
    MyFile.close();
-    
+    int count =0;
 
     Mat image = imread(argv[1]);
     if(image.empty()){
@@ -78,19 +76,24 @@ int main(int argc, char** argv){
         for(int col =0 ; col < image.cols ; col++){
             for(int color = 0 ; color < 3 ; color++){
 
-               //getting the pixel values
 
                 Vec3b pixel = image.at<Vec3b>(Point(row,col));
-                
                 if(index < length_of_bits){
-               //if the bit value is 1 then LSB is modified as 1
-               //if the bit value is 0 then LSB is modified as 0
-               
-               if(temp[index] ==1){
+               if((int)temp[index] ==49){
+
+                        //cout<<"intial1"<<(int)pixel.val[color]<<"  ";
                         pixel.val[color] |= 1;
+                        
+                        //cout<<"final1"<<(int)pixel.val[color]<<endl;
+                        //cout<<endl;
+
                     }
                     else{
+                        //cout<<"intial0"<<(int)pixel.val[color]<<"  ";
                         pixel.val[color] &= ~1;
+                        
+                        //cout<<"final0"<<(int)pixel.val[color]<<endl;
+                        //cout<<endl;
                     }
                     index++;
                     image.at<Vec3b>(Point(row,col)) = pixel;
@@ -105,7 +108,10 @@ int main(int argc, char** argv){
     }
    }
     }
+
+
 exiting:;
+
 
 //checks if the entire message is encoded or not
 if(!encoded){
