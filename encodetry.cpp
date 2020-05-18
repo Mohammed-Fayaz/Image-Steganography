@@ -26,7 +26,7 @@ string bin(int num){
     
     }
     }
-
+//making sure the legth of the binary is 7
     string temp="";
     for(int i =0 ; i< 7-s.length() ; i++){
         temp.append("0");
@@ -37,6 +37,11 @@ string bin(int num){
 
 
 int main(int argc, char** argv){
+  
+  //argv[1] contains the image that is used.
+  //argv[2] contains the textfile.
+  //argv[3] contains the output image
+  
   fstream MyFile(argv[2]);
   
   if(!MyFile.is_open()){
@@ -57,6 +62,7 @@ int main(int argc, char** argv){
 
    MyFile.close();
     
+
     Mat image = imread(argv[1]);
     if(image.empty()){
         cout<< "There is no image\n";
@@ -72,11 +78,15 @@ int main(int argc, char** argv){
         for(int col =0 ; col < image.cols ; col++){
             for(int color = 0 ; color < 3 ; color++){
 
-                
+               //getting the pixel values
+
                 Vec3b pixel = image.at<Vec3b>(Point(row,col));
-                //cout<< (int)pixel.val[color]<<" ";
+                
                 if(index < length_of_bits){
-                    if(temp[index] ==1){
+               //if the bit value is 1 then LSB is modified as 1
+               //if the bit value is 0 then LSB is modified as 0
+               
+               if(temp[index] ==1){
                         pixel.val[color] |= 1;
                     }
                     else{
@@ -96,6 +106,8 @@ int main(int argc, char** argv){
    }
     }
 exiting:;
+
+//checks if the entire message is encoded or not
 if(!encoded){
     cout << "Image size is insufficient to encode Try again with a large Image"<<endl;
     return -1;

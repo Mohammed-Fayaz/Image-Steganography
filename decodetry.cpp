@@ -6,6 +6,8 @@ using namespace std;
 using namespace cv;
 
 
+//converting a binary string into decimal number
+
 int getintvalue(string s){
     int val =0;
     
@@ -39,6 +41,8 @@ int main(int argc , char** argv){
             for(int color = 0; color < 3 ; color++){
 
                 Vec3b pixel = image.at<Vec3b>(Point(row,col));
+                //getting  bits that are stored in the picture
+                
                 if(pixel.val[color] &1){
                     temp.append("1");
                 }
@@ -48,6 +52,8 @@ int main(int argc , char** argv){
                 bits++;
                 if(bits == 8){
                     flag = getintvalue(temp);
+                    
+                    //when we reach endoffile we exit the loop
                     if(flag == 0){
                     
                         goto exiting;
