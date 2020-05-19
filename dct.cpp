@@ -35,12 +35,12 @@ using namespace cv;
 
 const string SENTINEL = "6969";
 
-inline cv::Mat encode_dct(const cv::Mat& img, std::string text, int mode = STORE_ONCE, int channel = 0, int intensity = 30)
+inline cv::Mat encode_dct(const cv::Mat& img, std::string text, int mode = STORE_ONCE, int channel = 0, int intensity = 100)
 {
 	using namespace cv;
 	using namespace std;
 
-	text.append(SENTINEL);
+	//text.append(SENTINEL);
 
 	auto block_width  = 8;
 	auto block_height = 8;
@@ -198,6 +198,73 @@ inline std::string decode_dct(const cv::Mat& img, int channel = 0)
 }
 
 /*!
+ * Tries to recover the original string by comparing multiple extracted data
+ * from multiple channels or methods.
+ *
+ * \param texts List of the same string extracted from different channels/methods.
+ *
+ * \return Recovered string.
+ */
+inline std::string repair(const std::vector<std::string>& texts)
+{
+	using namespace std;
+
+	auto longest = max_element(texts.begin(), texts.end(), [](auto a, auto b) { return a.size() < b.size(); })->size();
+	string result(longest, 0);
+
+	for (int i = 0; i < longest; i++)
+	{
+		unordered_map<char, uchar> freq;
+
+		for (int j = 0; j < texts.size(); j++)
+		{
+			if (texts[j].size() <= i)
+			{
+				continue;
+			}
+
+			freq[texts[j][i]]++;
+		}
+
+		auto frequent = max_element(freq.begin(), freq.end(), [](auto a, auto b) { return a.second < b.second; })->first;
+
+		result[i] = frequent;
+	}
+
+	return result;
+}
+
+/*!
+ * Tests the discrete cosine transformation method with 80% JPEG compression
+ * and multi-channel message reconstruction.
+ */
+/*void test_dct_multi()
+{
+	auto img = imread("test/lena.jpg");
+
+	show_image(img, "Original");
+
+	auto input = read_file("test/test.txt");
+	auto stego = encode_dct(img,   input, STORE_FULL, 0);
+	     stego = encode_dct(stego, input, STORE_FULL, 1);
+		 stego = encode_dct(stego, input, STORE_FULL, 2);
+
+	imwrite("test/lena_dct.jpg", stego, vector<int> { CV_IMWRITE_JPEG_QUALITY, 80 });
+	stego = imread("test/lena_dct.jpg");
+
+	auto output = repair(vector<string>
+		{
+			decode_dct(stego, 0),
+			decode_dct(stego, 1),
+			decode_dct(stego, 2)
+		});
+
+	print_debug(input, output);
+
+	show_image(stego, "Altered");
+}*/
+
+/*!
  * Reads the specified file into a string.
  *
  * \param file Path to the file.
@@ -216,18 +283,21 @@ int main(int argc, char *argv[]){
 	if (string(argv[1]) == "encode"){
 		auto img = imread(argv[2]);
 		auto input  = read_file(argv[3]);
-		auto stego  = encode_dct(img, input);
-		auto output = decode_dct(stego);
-		size_t found = output.find(SENTINEL);
-		auto normalized_output = output.substr(0, found);
-		cout << "The secret message is: " << normalized_output << endl;
+
+		auto stego = encode_dct(img, input, STORE_FULL, 0);
+	    stego = encode_dct(stego, input, STORE_FULL, 1);
+		stego = encode_dct(stego, input, STORE_FULL, 2);
 		imwrite(argv[4], stego, vector<int> {CV_IMWRITE_JPEG_QUALITY, 80});
 	}
 	else if (string(argv[1]) == "decode"){
-		auto output = decode_dct(imread(argv[2]));
-		size_t found = output.find(SENTINEL);
-		auto normalized_output = output.substr(0, found);
-		cout << "The secret message is: " << normalized_output << endl;
+		auto stego = imread(argv[2]);
+		auto output = repair(vector<string>
+		{
+			decode_dct(stego, 0),
+			decode_dct(stego, 1),
+			decode_dct(stego, 2)
+		});
+		cout << "The secret message is: " << output << endl;
 		imshow("Image", imread(argv[2]));
 		waitKey(0);
 	}
