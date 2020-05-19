@@ -4,7 +4,7 @@
 
 using namespace std;
 using namespace cv;
-auto output_stream = std::ofstream(output_file.c_str(), std::ios::binary);
+
 
 //ascii ranges from 0 to 127 we can have a max of 7 bits in binary
 // So a char will be converted into a 7 bit binary code.
@@ -67,9 +67,22 @@ int main(int argc, char** argv){
         return -1;}
 
      int index=0,length_of_bits;
-     bool last_null_char = false;
-     bool encoded = false;
+     
+     //bool encoded = false;
      length_of_bits = temp.length();
+     if(length_of_bits >= image.rows * image.cols){
+      cout<<"Image size is insufficent" <<endl;
+      return -1;
+     }
+
+     cout << "Rows in image : " << image.rows <<endl;
+     cout << "Columns in image : " << image.cols << endl;
+
+     int limit = image.rows * image.cols /7 ;
+
+     cout << "The max number of characters that can be encoded in the image are : " << limit << endl;
+
+     cout << "By assuming the average length of a word to be 4 characters : " << limit/4 <<endl;
 
 
     for(int row =0 ; row < image.rows ; row++){
@@ -99,7 +112,7 @@ int main(int argc, char** argv){
                     image.at<Vec3b>(Point(row,col)) = pixel;
                     }
                 else{
-                    encoded = true;
+                    //encoded = true;
                     goto exiting;
                     
                 }
@@ -114,10 +127,10 @@ exiting:;
 
 
 //checks if the entire message is encoded or not
-if(!encoded){
+/*if(!encoded){
     cout << "Image size is insufficient to encode Try again with a large Image"<<endl;
     return -1;
-}
+}*/
 
 imwrite(argv[3],image);
 return 0;
