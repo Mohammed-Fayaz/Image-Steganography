@@ -46,15 +46,20 @@ int main(int argc, char** argv){
       cout <<"error in file handling"<<endl;
       return -1;}
 
-    char c,d;
+    string buffer,d;
     string temp="";
     int flag;
-    while(!MyFile.eof()){
-         MyFile.get(c);
+    while(getline(MyFile,buffer)){
+         for(char c : buffer){
+         cout<<c;
          //cout<<c;
          temp.append(bin((int)c));
          //cout<<temp<<endl;
+         //free the variable c
+         
          }
+         temp.append("0001010");
+     }
         //add 7 0's to temp in the end to indicate the end of file
         temp.append("0000000");
 
@@ -75,14 +80,15 @@ int main(int argc, char** argv){
       return -1;
      }
 
-     cout << "Rows in image : " << image.rows <<endl;
-     cout << "Columns in image : " << image.cols << endl;
+    // cout << "Rows in image : " << image.rows <<endl;
+     //cout << "Columns in image : " << image.cols << endl;
 
      int limit = image.rows * image.cols /7 ;
 
-     cout << "The max number of characters that can be encoded in the image are : " << limit << endl;
+    // cout << "The max number of characters that can be encoded in the image are : " << limit << endl;
+     //cout << "The number of bits are : " << length_of_bits<<endl;
 
-     cout << "By assuming the average length of a word to be 4 characters : " << limit/4 <<endl;
+     //cout << "By assuming the average length of a word to be 4 characters : " << limit/4 <<endl;
 
 
     for(int row =0 ; row < image.rows ; row++){
